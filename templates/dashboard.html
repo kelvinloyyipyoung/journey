@@ -22,33 +22,19 @@
         </form>
 
         <!-- Response section - only shown when API returns data -->
-        {% if response_dict %}
         <div class="center">
             <div class="response">
                 <!-- Game name header -->
-                <h2>{{ game_name }}</h2>
-                <!-- Crossplay information table -->
-                <table>
-                    <thead>
-                        <!-- Table headers -->
-                        <tr>
-                            <th>Platform</th>
-                            <th>Crossplay</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Iterate through platforms and their crossplay compatibility -->
-                        {% for console, store in response_dict.items() %}
-                        <tr>
-                            <td>{{ console }}</td>
-                            <td>{{ store }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <h2>{{ video_game }}</h2>
+                <ul>
+                    {% for platform in platforms %}
+                    <li>{{ platform }}</li>
+                    {% endfor %}
+                </ul>
+                <h2>Crossplay</h2>
+                <p>{{ crossplay }}</p>
             </div>
         </div>
-        {% endif %}
 
         <!-- Error message section - only shown when an error occurs -->
         {% if error_message %}

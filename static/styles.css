@@ -25,9 +25,9 @@ body {
     color: #333; /* Adjust color as needed */
   }
   
-  p {
+  p, li {
     font-size: 0.9em; /* Adjust as needed */
-    line-height: 1.6;
+    /* line-height: 1; */
     color: #555; /* Adjust color as needed */
     margin-bottom: 20px;
   }
@@ -75,6 +75,7 @@ body {
     border-radius: 5px;
     font-size: 1em;
     cursor: pointer;
+    font-family: 'Source Code Pro', monospace;
   }
   
   button[type="submit"]:hover {
