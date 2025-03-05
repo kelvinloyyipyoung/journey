@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
+body {
+    font-family: 'Source Code Pro', monospace; /* Choose a suitable font */
+    background: linear-gradient(to right, #E8976C, #aacde0); /* Gradient background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  
+  .div-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    width: 400px; /* Adjust as needed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.5em; /* Adjust as needed */
+    color: #333; /* Adjust color as needed */
+  }
+  
+  p {
+    font-size: 0.9em; /* Adjust as needed */
+    line-height: 1.6;
+    color: #555; /* Adjust color as needed */
+    margin-bottom: 20px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+  }
+  
+  textarea {
+    resize: vertical; /* Allow vertical resizing */
+  }
+  
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  
+  button[type="submit"] {
+    background-color: #E8976C; /* Match gradient color */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #D1825B; /* Slightly darker hover color */
+  }

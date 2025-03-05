@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head section with meta tags and stylesheet -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journey</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Main container for all content -->
+    <div class="div-container">
+        <!-- Page header and description -->
+        <h1>Journey</h1>
+        <p>I can tell you where you can find your favourite games!</p>
+        
+        <!-- Game search form -->
+        <form action="/submit" method="post">
+            <label for="video-game">Name:</label>
+            <input type="text" id="video-game" name="video-game" required>
+            <button type="submit">Submit</button>
+        </form>
+
+        <!-- Response section - only shown when API returns data -->
+        {% if response_dict %}
+        <div class="center">
+            <div class="response">
+                <!-- Game name header -->
+                <h2>{{ game_name }}</h2>
+                <!-- Crossplay information table -->
+                <table>
+                    <thead>
+                        <!-- Table headers -->
+                        <tr>
+                            <th>Platform</th>
+                            <th>Crossplay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Iterate through platforms and their crossplay compatibility -->
+                        {% for console, store in response_dict.items() %}
+                        <tr>
+                            <td>{{ console }}</td>
+                            <td>{{ store }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Error message section - only shown when an error occurs -->
+        {% if error_message %}
+        <div class="error">
+            <h2>Error:</h2>
+            <p>{{ error_message }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
