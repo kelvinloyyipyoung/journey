@@ -20,27 +20,24 @@ google_search_tool = Tool(
 )
 
 @app.route('/')
-def dashboard():
+def index():
     """
-    Main dashboard route that displays game crossplay information.
+    Main index route that displays game crossplay information.
     Gets data from session instead of URL parameters.
     """
     try:
-        # Get data from session instead of request.args
-        game_name = session.pop('game_name', None)
-        platforms = session.pop('platforms', None)
-        crossplay = session.pop('crossplay', None)
-        error_message = session.pop('error_message', None)
+        game_name = session.pop('game_name')
+        platforms = session.pop('platforms')
+        crossplay = session.pop('crossplay')
+    except KeyError:
+        game_name = None
+        platforms = None 
+        crossplay = None
 
-        return render_template('dashboard.html',
-                            game_name=game_name,
-                            platforms=platforms,
-                            crossplay=crossplay,
-                            error_message=error_message)
-    
-    except json.JSONDecodeError:
-        error_message = "Journey does not recognise that game."
-        return render_template('dashboard.html', error_message=error_message)
+    return render_template('index.html',
+                        game_name=game_name,
+                        platforms=platforms,
+                        crossplay=crossplay)
 
 @app.route('/', methods=['POST'])
 def submit():
@@ -55,6 +52,7 @@ def submit():
         query = f"""Search {video_game} on Google to find which platforms I can play this game on. Also search for details about cross play between platforms. 
 
         Notes:
+
         If for crossplay, any certain settings need to be changed, or any account linking, or only certain editions are compatible, then state so. 
         Search reddit for crossplay information.
         If a game is available on PC, list each storefront as a separate entry. Don't say Microsoft Windows. 
@@ -62,7 +60,7 @@ def submit():
         If a platform is no longer available, do not include it.
         Limit crossplay information to 100 words, and print in plain english, no markdown.
 
-        Please output in json format and nothing extra:
+        If the game has been released, please output in json format and nothing extra:
 
         'game_name': <content here>
 
@@ -73,7 +71,9 @@ def submit():
             'Xbox 360 (no longer available)',
             'PlayStation 3 (no longer available)'
         ],
-        'crossplay': <content here>"""
+        'crossplay': <content here>
+
+        """
 
         
         # Make API request
@@ -94,11 +94,11 @@ def submit():
         session['platforms'] = response_data['platforms']
         session['crossplay'] = response_data['crossplay']
         
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
     
     except Exception as e:
         session['error_message'] = f"An error occurred: {str(e)}"
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
 
 # Run the application in debug mode if executed directly
 if __name__ == '__main__':
