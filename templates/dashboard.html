@@ -15,17 +15,18 @@
         <p>I can tell you where you can find your favourite games!</p>
         
         <!-- Game search form -->
-        <form action="/submit" method="post">
+        <form action="/" method="post">
             <label for="video-game">Name:</label>
             <input type="text" id="video-game" name="video-game" required>
             <button type="submit">Submit</button>
         </form>
 
         <!-- Response section - only shown when API returns data -->
+        {% if game_name and platforms and crossplay %}
         <div class="center">
             <div class="response">
                 <!-- Game name header -->
-                <h2>{{ video_game }}</h2>
+                <h2>{{ game_name }}</h2>
                 <ul>
                     {% for platform in platforms %}
                     <li>{{ platform }}</li>
@@ -35,7 +36,7 @@
                 <p>{{ crossplay }}</p>
             </div>
         </div>
-
+        {% endif %}
         <!-- Error message section - only shown when an error occurs -->
         {% if error_message %}
         <div class="error">

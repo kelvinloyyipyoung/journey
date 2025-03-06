@@ -1,12 +1,13 @@
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from google import genai
 from dotenv import load_dotenv
 from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
 
 # Initialize Flask application
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 
 # Configure API client
 load_dotenv()
@@ -22,23 +23,30 @@ google_search_tool = Tool(
 def dashboard():
     """
     Main dashboard route that displays game crossplay information.
-    Handles JSON parsing of the API response and extracts game name.
+    Gets data from session instead of URL parameters.
     """
     try:
-        response_text = request.args.get("response_text", "")
-        
-        return render_template('dashboard.html', response_text=response_text)
+        # Get data from session instead of request.args
+        game_name = session.pop('game_name', None)
+        platforms = session.pop('platforms', None)
+        crossplay = session.pop('crossplay', None)
+        error_message = session.pop('error_message', None)
+
+        return render_template('dashboard.html',
+                            game_name=game_name,
+                            platforms=platforms,
+                            crossplay=crossplay,
+                            error_message=error_message)
     
     except json.JSONDecodeError:
-        # Handle invalid JSON responses
-        error_message = "Automatic Memory does not recognise that game."
+        error_message = "Journey does not recognise that game."
         return render_template('dashboard.html', error_message=error_message)
 
-@app.route('/submit', methods=['POST'])
+@app.route('/', methods=['POST'])
 def submit():
     """
     Handle form submissions and interact with Gemini API.
-    Generates a query for game crossplay information and processes the response.
+    Stores results in session instead of URL parameters.
     """
     try:
         video_game = request.form['video-game']
@@ -49,12 +57,14 @@ def submit():
         Notes:
         If for crossplay, any certain settings need to be changed, or any account linking, or only certain editions are compatible, then state so. 
         Search reddit for crossplay information.
-        If a game is available on PC, list each storefront as a separate entry
-        . Don't say Microsoft Windows. 
+        If a game is available on PC, list each storefront as a separate entry. Don't say Microsoft Windows. 
         Assume the reader is technologically versed and does not need layman's distinction.
-        If a platform is no longer available, or a game is no longer available on a certain platform, then append it with (no longer available).
+        If a platform is no longer available, do not include it.
+        Limit crossplay information to 100 words, and print in plain english, no markdown.
 
         Please output in json format and nothing extra:
+
+        'game_name': <content here>
 
         'platforms': [
             'Steam',
@@ -79,20 +89,16 @@ def submit():
         # Parse the response text as JSON
         response_data = json.loads(response_text)
         
-        # Extract platforms and crossplay info
-        platforms = response_data['platforms']
-        crossplay = response_data['crossplay']
+        # Store in session instead of URL parameters
+        session['game_name'] = response_data['game_name']
+        session['platforms'] = response_data['platforms']
+        session['crossplay'] = response_data['crossplay']
         
-        # Pass the data to the template
-        return render_template('dashboard.html', 
-                            video_game=video_game,
-                            platforms=platforms,
-                            crossplay=crossplay)
+        return redirect(url_for('dashboard'))
     
     except Exception as e:
-        # Handle any API or processing errors
-        error_message = f"An error occurred: {str(e)}"
-        return render_template('dashboard.html', error_message=error_message)
+        session['error_message'] = f"An error occurred: {str(e)}"
+        return redirect(url_for('dashboard'))
 
 # Run the application in debug mode if executed directly
 if __name__ == '__main__':
