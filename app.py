@@ -25,10 +25,12 @@ def index():
     Main index route that displays game crossplay information.
     Gets data from session instead of URL parameters.
     """
+    error_message = session.pop('error_message', None)  # Retrieve error message first
+
     try:
-        game_name = session.pop('game_name')
-        platforms = session.pop('platforms')
-        crossplay = session.pop('crossplay')
+        game_name = session.pop('game_name', None)  # Use pop with default value
+        platforms = session.pop('platforms', None)  # Use pop with default value
+        crossplay = session.pop('crossplay', None)  # Use pop with default value
     except KeyError:
         game_name = None
         platforms = None 
@@ -37,7 +39,8 @@ def index():
     return render_template('index.html',
                         game_name=game_name,
                         platforms=platforms,
-                        crossplay=crossplay)
+                        crossplay=crossplay,
+                        error_message=error_message)  # Pass error_message to template
 
 @app.route('/', methods=['POST'])
 def submit():
@@ -49,18 +52,20 @@ def submit():
         video_game = request.form['video-game']
         
         # Construct API query with specific JSON format requirements
-        query = f"""Search {video_game} on Google to find which platforms I can play this game on. Also search for details about cross play between platforms. 
+        query = f"""Your task is to find which platforms {video_game} is available on, and information about crossplay. 
 
-        Notes:
-
+        Important:
+        Use grounding with google search to find platform availability.
+        Use grounding with google search to search reddit for crossplay information.
+        Take the general accepted meaning for the search string, I.e. lol stands for league of legends, ow stands for overwatch.
         If for crossplay, any certain settings need to be changed, or any account linking, or only certain editions are compatible, then state so. 
-        Search reddit for crossplay information.
         If a game is available on PC, list each storefront as a separate entry. Don't say Microsoft Windows. 
         Assume the reader is technologically versed and does not need layman's distinction.
-        If a platform is no longer available, do not include it.
         Limit crossplay information to 100 words, and print in plain english, no markdown.
+        If you cannot find the game, output "Game not found"
+        Do not output your thought process:
 
-        If the game has been released, please output in json format and nothing extra:
+        Once you have all the information, output it as a json object. You must use double quotes for the keys and values.
 
         'game_name': <content here>
 
@@ -84,7 +89,8 @@ def submit():
             )
         )
         response_text = response.text
-        response_text = response_text.strip("`json ")
+        response_text = response_text.strip("```json\n")
+        
 
         # Parse the response text as JSON
         response_data = json.loads(response_text)
